@@ -73,7 +73,7 @@ export default function Helmet(props: HelmetProps) {
 
     if (classes === undefined) return clear;
 
-    for (const className of classes.split(" ")) {
+    for (const className of String(classes).split(" ")) {
       document.documentElement.classList.add(className);
     }
 

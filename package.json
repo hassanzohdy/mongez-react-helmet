@@ -1,6 +1,6 @@
 {
     "name": "@mongez/react-helmet",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A React component to manage web page metadata.",
     "main": "src/index.ts",
     "dependencies": {
