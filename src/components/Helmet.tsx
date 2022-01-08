@@ -5,6 +5,7 @@ import {
   setTitle,
   setCanonicalUrl,
   setHTMLAttributes,
+  getElementAttributes,
   getMetaData,
 } from "@mongez/dom";
 import React from "react";
@@ -80,17 +81,7 @@ export default function Helmet(props: HelmetProps) {
   }, [props.className]);
 
   const currentHTMLAttributes = React.useMemo(() => {
-    type Attributes = {
-      [attributeKey: string]: string;
-    };
-
-    const attributesList: Attributes = {};
-
-    for (const attribute of document.documentElement.attributes) {
-      attributesList[attribute.name] = attribute.value;
-    }
-
-    return attributesList;
+    return getElementAttributes(document.documentElement);
   }, []);
 
   // html attributes

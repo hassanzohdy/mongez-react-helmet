@@ -184,4 +184,5 @@ Please note that only `title` prop is the only required prop for this component.
 
 ## TODO
 
+- Enhance code in `Helmet` component.
 - Add Unit Tests.
