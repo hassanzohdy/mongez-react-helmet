@@ -1,0 +1,21 @@
+{
+  "name": "@mongez/react-helmet",
+  "version": "1.0.11",
+  "description": "A React component to manage web page metadata.",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@mongez/dom": "^1.0.x"
+  },
+  "keywords": [
+    "react",
+    "helmet",
+    "react-helmet",
+    "react-metadata"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hassanzohdy/mongez-react-helmet"
+  },
+  "author": "hassanzohdy",
+  "license": "MIT"
+}
