@@ -71,7 +71,7 @@ export default function Helmet(props: HelmetProps) {
 
     const classes: string = getConfig<string>("className");
 
-    if (classes === undefined) return clear;
+    if (!classes) return clear;
 
     for (const className of String(classes).split(" ")) {
       document.documentElement.classList.add(className);
