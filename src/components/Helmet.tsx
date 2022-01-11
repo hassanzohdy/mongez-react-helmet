@@ -12,6 +12,8 @@ import React from "react";
 import { getHelmetConfig } from "../config";
 import { HelmetConfigurations, HelmetProps } from "../types";
 
+const documentElement: HTMLElement = document.documentElement;
+
 export default function Helmet(props: HelmetProps) {
   function getConfig<T>(key: keyof HelmetProps): T {
     return props[key] !== undefined
@@ -26,15 +28,29 @@ export default function Helmet(props: HelmetProps) {
     // page title = title prop + app separator + app name
     const clear = () => setTitle(currentMeta.title);
 
-    let titleSegments: string[] = [props.title];
+    let title: string = String(props.title);
+
+    const translate: Function = getHelmetConfig("translationFunction");
+
+    const translatable: boolean = getConfig<boolean>("translatable");
+
+    if (translatable && translate) {
+      title = translate(title);
+    }
+
+    let titleSegments: string[] = [title];
 
     const appendAppName = getConfig<boolean>("appendAppName");
     const appNameSeparator: string = getConfig<string>("appNameSeparator");
-    const appName: string = getConfig<string>("appName");
+    let appName: string = getConfig<string>("appName");
 
     if (appendAppName && appName) {
       if (appNameSeparator) {
         titleSegments.push(appNameSeparator);
+      }
+
+      if (getHelmetConfig("translateAppName") && translate) {
+        appName = translate(appName);
       }
 
       titleSegments.push(appName);
@@ -45,28 +61,25 @@ export default function Helmet(props: HelmetProps) {
     return clear;
   }, [props.title, props.appName, props.appNameSeparator, props.appendAppName]);
 
-  const currentPageId = React.useMemo(() => document.documentElement.id, []);
+  const currentPageId = React.useMemo(() => documentElement.id, []);
 
   React.useEffect(() => {
     const clear = () => {
-      document.documentElement.id = currentPageId;
+      documentElement.id = currentPageId;
     };
 
     if (props.pageId === undefined) return clear;
 
-    document.documentElement.id = props.pageId;
+    documentElement.id = props.pageId;
 
     return clear;
   }, [props.pageId]);
 
-  const currentClasses = React.useMemo(
-    () => document.documentElement.className,
-    []
-  );
+  const currentClasses = React.useMemo(() => documentElement.className, []);
 
   React.useEffect(() => {
     const clear = () => {
-      document.documentElement.className = currentClasses;
+      documentElement.className = currentClasses;
     };
 
     const classes: string = getConfig<string>("className");
@@ -74,14 +87,14 @@ export default function Helmet(props: HelmetProps) {
     if (!classes) return clear;
 
     for (const className of String(classes).split(" ")) {
-      document.documentElement.classList.add(className);
+      documentElement.classList.add(className);
     }
 
     return clear;
   }, [props.className]);
 
   const currentHTMLAttributes = React.useMemo(() => {
-    return getElementAttributes(document.documentElement);
+    return getElementAttributes(documentElement);
   }, []);
 
   // html attributes

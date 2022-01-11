@@ -23,6 +23,12 @@ export type HelmetProps = {
    */
   appNameSeparator?: string;
   /**
+   * Determine whether the title will be translated automatically
+   *
+   * @default true
+   */
+  translatable?: boolean;
+  /**
    * Page meta Description
    */
   description?: string;
@@ -89,4 +95,21 @@ export type HelmetConfigurations = {
    * Define page class name
    */
   className?: string;
+  /**
+   * Determine whether the title will be translated automatically
+   *
+   * @default true
+   */
+  translatable?: boolean;
+  /**
+   * Translate app name
+   *
+   * @default true
+   */
+  translateAppName?: boolean;
+  /**
+   * Translation function
+   * Required if translatable config or prop is set to true
+   */
+  translationFunction?: Function;
 };

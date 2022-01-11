@@ -23,7 +23,7 @@ First off, let's define our helmet configurations so we can use it later without
 In some earlier point in your app, create a `src/config/helmet.ts` file and put the following code inside it, then import it in your `src/index.ts`, javascript files are allowed also (But not recommended).
 
 ```js
-import { setHelmetConfigurations } from '@mongez/cache';
+import { setHelmetConfigurations } from '@mongez/react-helmet';
 
 setHelmetConfigurations({
   appName: 'My Online Store',
@@ -69,6 +69,23 @@ type HelmetConfigurations = {
    * Define page class name
    */
   className?: string;
+  /**
+   * Determine whether the title will be translated automatically
+   *
+   * @default true
+   */
+  translatable?: boolean;
+  /**
+   * Translate app name
+   *
+   * @default true
+   */
+  translateAppName?: boolean;
+  /**
+   * Translation function
+   * Required if translatable config or prop is set to true
+   */
+  translationFunction?: Function;
 };
 ```
 
@@ -145,6 +162,12 @@ type HelmetProps = {
    */
   appNameSeparator?: string;
   /**
+   * Determine whether the title will be translated automatically
+   *
+   * @default true
+   */
+  translatable?: boolean;
+  /**
    * Page meta Description
    */
   description?: string;
@@ -182,7 +205,81 @@ type HelmetProps = {
 
 Please note that only `title` prop is the only required prop for this component.
 
+## Translatable title
+
+You may determine whether to auto translate the given title or not using `translatable` prop or config, this will allow title to be translated using `translationFunction` that you pass in the helmet configurations.
+
+```tsx
+import { Helmet, setHelmetConfigurations } from '@mongez/react-helmet';
+
+function translate(title) {
+  return currentTranslation[title];
+}
+
+setHelmetConfigurations({
+  appName: 'Online Store',
+  appendAppName: true,
+  appNameSeparator: ' | ',
+  translatable: true,
+  translationFunction: translate
+});
+
+export default function contactUsPage() {
+  return (
+    <>
+    <Helmet title="contactUs" description="contactUs" />
+      // rest of the code
+    </>
+  )
+}
+```
+
+You may use [Mongez Localization trans()](https://github.com/hassanzohdy/mongez-localization#translating-keywords) function with it if you're using it in your project.
+
+```tsx
+import { trans } from '@mongez/localization';
+import { Helmet, setHelmetConfigurations } from '@mongez/react-helmet';
+
+setHelmetConfigurations({
+  appName: 'Online Store',
+  appendAppName: true,
+  appNameSeparator: ' | ',
+  translatable: true,
+  translationFunction: trans,
+});
+```
+
+## Translatable App Name
+
+You can also determine whether to auto translate app name if `appendAppName` is set to true automatically.
+
+> By default `translatable` is set to true, but requires `translationFunction` to be set.
+
+```tsx
+import { trans } from '@mongez/localization';
+import { Helmet, setHelmetConfigurations } from '@mongez/react-helmet';
+
+setHelmetConfigurations({
+  appName: 'appName',
+  appendAppName: true,
+  appNameSeparator: ' | ',
+  translatable: true,
+  translateAppName: true,
+  translationFunction: trans,
+});
+```
+
+Now set `appName` key in each locale object translation, and that's it.
+
+> By default `translateAppName` is set to true, but requires `translationFunction` to be set.
+
+## Change Log
+
+- 1.0.4 (11 Jan 2022)
+  - Added `translatable` feature.
+
 ## TODO
 
 - Enhance code in `Helmet` component.
+- Add translation feature for description and keywords.
 - Add Unit Tests.

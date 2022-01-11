@@ -3,6 +3,8 @@ import { HelmetConfigurations } from "./types";
 let defaultConfigurations: HelmetConfigurations = {
   appendAppName: true,
   url: true,
+  translatable: true,
+  translateAppName: true,
   appNameSeparator: " | ",
 };
 
