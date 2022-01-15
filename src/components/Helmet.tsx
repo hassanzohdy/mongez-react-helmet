@@ -100,6 +100,18 @@ export default function Helmet(props: HelmetProps) {
   // html attributes
   React.useEffect(() => {
     const clear = () => {
+      // Stop resetting dir attribute and lang attribute on amount page
+      // as a case may changes the page localization and the on unmount stage here
+      // will reset it to previous dir and lang attributes.
+      const attributes = { ...currentHTMLAttributes };
+      if (attributes.dir) {
+        delete attributes.dir;
+      }
+
+      if (attributes.lang) {
+        delete attributes.lang;
+      }
+
       setHTMLAttributes(currentHTMLAttributes);
     };
 
