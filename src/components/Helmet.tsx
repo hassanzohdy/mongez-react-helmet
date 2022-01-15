@@ -112,7 +112,7 @@ export default function Helmet(props: HelmetProps) {
         delete attributes.lang;
       }
 
-      setHTMLAttributes(currentHTMLAttributes);
+      setHTMLAttributes(attributes);
     };
 
     const htmlAttributes: Object = getConfig<Object>("htmlAttributes");

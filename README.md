@@ -275,7 +275,7 @@ Now set `appName` key in each locale object translation, and that's it.
 
 ## Change Log
 
-- 1.0.7 (16 Jan 2022)
+- 1.0.8 (16 Jan 2022)
   - Fixed Bug: Stopped resetting dir and lang attributes on Helmet component unmount.
 - 1.0.4 (11 Jan 2022)
   - Added `translatable` feature.
