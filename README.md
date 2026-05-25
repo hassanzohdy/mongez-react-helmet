@@ -1,287 +1,289 @@
-# Mongez React Helmet
+# @mongez/react-helmet
 
-A React component to manage web page metadata.
+> Document `<head>` manager for React. Drop a `<Helmet>` anywhere in your tree and the page title, description, keywords, Open Graph / Twitter cards, canonical URL, favicon, and `<html>` attributes update — with cleanup on unmount.
 
-## Before moving on
+`@mongez/react-helmet` is the React adapter over [`@mongez/dom`](https://github.com/hassanzohdy/dom)'s metadata module. Everything you set declaratively on `<Helmet>` resolves down to plain `<meta>` / `<link>` / `<title>` writes on the real document head — no virtual DOM for `<head>`, no server-string side bag, no extra runtime.
 
-This package is fully dependant on [Mongez Dom](https://github.com/hassanzohdy/mongez-dom), so defining any values such as `title` `description` `image` will generate the same dom elements as it uses **Mongez Dom** under the hood.
+```tsx
+import Helmet from "@mongez/react-helmet";
 
-## Installation
+export default function ArticlePage({ post }) {
+  return (
+    <>
+      <Helmet
+        title={post.title}
+        description={post.summary}
+        keywords={post.tags}
+        image={post.coverImage}
+      />
+      <Article post={post} />
+    </>
+  );
+}
+```
 
-`yarn add @mongez/react-helmet`
+## Install
 
-Or
+```sh
+yarn add @mongez/react-helmet
+# peer: react >= 18, @mongez/dom >= 1.1.2
+```
 
-`npm i @mongez/react-helmet`
+## A 30-second tour
 
-## Usage
+```tsx
+import Helmet, { setHelmetConfigurations } from "@mongez/react-helmet";
 
-First off, let's define our helmet configurations so we can use it later without setting it every time.
-
-### Setting Helmet Configurations
-
-In some earlier point in your app, create a `src/config/helmet.ts` file and put the following code inside it, then import it in your `src/index.ts`, javascript files are allowed also (But not recommended).
-
-```js
-import { setHelmetConfigurations } from '@mongez/react-helmet';
-
+// 1. App-wide defaults once, near your entry.
 setHelmetConfigurations({
-  appName: 'My Online Store',
+  appName: "My Online Store",
   appendAppName: true,
-  appNameSeparator: ' | ',
+  appNameSeparator: " | ",
 });
-```
 
-### Helmet Configurations List
-
-Here is the entire configurations list that can be used with `setHelmetConfigurations`
-
-```ts
-type HelmetConfigurations = {
-  /**
-   * Define the app name, needed when appendAppName is set to true
-   */
-  appName?: string;
-  /**
-   * Append app name beside the title
-   *
-   * @default true
-   */
-  appendAppName?: boolean;
-  /**
-   * Defines the separator between the page title and app name
-   * This will be used only if the `appendAppName` is set to true
-   *
-   * @default " | "
-   */
-  appNameSeparator?: string;
-  /**
-   * Allow adding url meta tags automatically in the head tag
-   *
-   * @default true
-   */
-  url?: boolean;
-  /**
-   * Sets Html attributes list to html tag
-   */
-  htmlAttributes?: Object;
-  /**
-   * Define page class name
-   */
-  className?: string;
-  /**
-   * Determine whether the title will be translated automatically
-   *
-   * @default true
-   */
-  translatable?: boolean;
-  /**
-   * Translate app name
-   *
-   * @default true
-   */
-  translateAppName?: boolean;
-  /**
-   * Translation function
-   * Required if translatable config or prop is set to true
-   */
-  translationFunction?: Function;
-};
-```
-
-## Using Helmet Component
-
-Now we're ready, let's use our `Helmet` component in our pages, go to your `HomePage` component file.
-
-```tsx
-import { Helmet } from '@mongez/react-helmet';
-
-export default function HomePage() {
+// 2. Page-level overrides anywhere in the tree.
+function HomePage() {
   return (
     <>
-    <Helmet appendAppName={false} title="My Online Store" description="Short description about my store" keywords={['online', 'store', 'electronics']} />
-      // rest of the code
+      <Helmet
+        title="Home"
+        description="Best deals every day."
+        keywords={["electronics", "deals", "shop"]}
+      />
+      <HomeContent />
     </>
-  )
+  );
+}
+// document.title  → "Home | My Online Store"
+// <meta name="description" content="Best deals every day.">
+// <meta name="keywords" content="electronics,deals,shop">
+// <meta property="og:title" content="Home | My Online Store">  (and og:image:alt, twitter:title, ...)
+
+// 3. Per-page <html> attributes (lang/dir for i18n).
+function ArabicPage() {
+  return (
+    <Helmet
+      title="عربى"
+      htmlAttributes={{ lang: "ar", dir: "rtl" }}
+      pageId="arabic-page"
+      className="theme-light arabic-route"
+    />
+  );
 }
 ```
 
-Here we set our title, and disabled appending the app name as it will be probably the same as the home page title, and added meta description and some keywords as well.
+## What's in the box
 
-Let's try our blog post page
+| Export | Purpose |
+|---|---|
+| `Helmet` (default) | The component. Effect-only, returns `null`. |
+| `setHelmetConfigurations` | Set app-wide defaults (`appName`, `appNameSeparator`, translation, ...). |
+| `getHelmetConfigurations` | Read the whole config object. |
+| `getHelmetConfig` | Read a single key, or fall back to a supplied default. |
+| `HelmetProps` (type) | Per-instance props. |
+| `HelmetConfigurations` (type) | App-wide configuration shape. |
 
-```tsx
-import React from 'react';
-import getPost from './../services/getPost';
-import { Helmet } from '@mongez/react-helmet';
+## The `<Helmet>` component
 
-export default function BlogPostPage(id) {
-  const [post, setPost] = React.useState(null);
+Drop it anywhere in your tree. Each mounted `<Helmet>` runs one effect per concern (title, description, keywords, image, url, html attributes, page id, class name). On unmount, the cleanup tries to restore the prior state.
 
-  React.useEffect(() => {
-    getPost(id).then(response => {
-      setPost(response.data.post);
-    })
-  }, []);
-
-  if (! post) return <h1>Loading...</h1>;
-
-  return (
-    <>
-    <Helmet title={post.title} description={post.shortDescription} keywords={post.keywords} image={post.image} />
-      // rest of the code
-    </>
-  )
-}
-```
-
-Here is the entire props list for `Helmet` Component
+### Props
 
 ```ts
 type HelmetProps = {
-  /**
-   * HTML Page Title
-   * This will set the og:title, twitter:title and itemprop name
-   */
+  // Required. Sets document.title (with optional app-name suffix), and
+  // mirrors to og:title, og:image:alt, twitter:title, twitter:image:alt,
+  // and the itemprop=name meta tag.
   title: string;
-  /**
-   * Define the app name, needed when appendAppName is set to true
-   */
+
+  // App-name suffix controls. Each falls back to the corresponding key in
+  // setHelmetConfigurations() when undefined here.
   appName?: string;
-  /**
-   * Append app name beside the title
-   *
-   * @default true
-   */
-  appendAppName?: boolean;
-  /**
-   * Defines the separator between the page title and app name
-   * This will be used only if the `appendAppName` is set to true
-   *
-   * @default " | "
-   */
-  appNameSeparator?: string;
-  /**
-   * Determine whether the title will be translated automatically
-   *
-   * @default true
-   */
-  translatable?: boolean;
-  /**
-   * Page meta Description
-   */
-  description?: string;
-  /**
-   * Page meta keywords
-   * If passed as string, then separate each keyword with comma `,`.
-   */
-  keywords?: string | string[];
-  /**
-   * Page image
-   */
-  image?: string;
-  /**
-   * Defines page url
-   * This can be changed from helmet configurations
-   * If set to true, then the current url will be grabbed directly.
-   *
-   * @default true
-   */
-  url?: boolean | string;
-  /**
-   * Sets Html attributes list to html tag
-   */
-  htmlAttributes?: Object;
-  /**
-   * Defines Page id
-   */
-  pageId?: string;
-  /**
-   * Define page class name
-   */
-  className?: string;
+  appendAppName?: boolean;        // default: true
+  appNameSeparator?: string;      // default: " | "
+
+  // Auto-translate the title via the configured translationFunction.
+  translatable?: boolean;         // default: true
+
+  // Page-level meta. Each writes the documented mirror tags.
+  description?: string;           // → meta description + og:description + twitter:description + itemprop=description
+  keywords?: string | string[];   // → meta keywords (array is joined with ",")
+  image?: string;                 // → meta image + og:image + twitter:image + itemprop=image
+  url?: boolean | string;         // string → that exact URL; true → window.location.href; default: true
+
+  // <html> tag controls.
+  htmlAttributes?: Record<string, any>;   // attribute bag to .setAttribute on <html>
+  pageId?: string;                         // sets <html>.id
+  className?: string;                      // space-separated; each token classList.add'd on <html>
 };
 ```
 
-Please note that only `title` prop is the only required prop for this component.
+Only `title` is required. Everything else falls back to either the per-call config or just isn't touched.
 
-## Translatable title
+### `Helmet` returns `null`
 
-You may determine whether to auto translate the given title or not using `translatable` prop or config, this will allow title to be translated using `translationFunction` that you pass in the helmet configurations.
+The component renders nothing into your tree — all writes happen in effects on the real `document.head` and `document.documentElement`. Safe to render at any depth, including inside layout components, suspense boundaries, and route-level shells.
 
-```tsx
-import { Helmet, setHelmetConfigurations } from '@mongez/react-helmet';
+## App-wide configuration
 
-function translate(title) {
-  return currentTranslation[title];
-}
+```ts
+import { setHelmetConfigurations } from "@mongez/react-helmet";
 
 setHelmetConfigurations({
-  appName: 'Online Store',
+  // App-name suffix
+  appName: "My Online Store",
   appendAppName: true,
-  appNameSeparator: ' | ',
+  appNameSeparator: " | ",
+
+  // i18n
   translatable: true,
-  translationFunction: translate
-});
+  translateAppName: true,
+  translationFunction: (key) => i18n.t(key),
 
-export default function contactUsPage() {
-  return (
-    <>
-    <Helmet title="contactUs" description="contactUs" />
-      // rest of the code
-    </>
-  )
-}
-```
+  // Default canonical-url behaviour for every <Helmet>
+  url: true,
 
-You may use [Mongez Localization trans()](https://github.com/hassanzohdy/mongez-localization#translating-keywords) function with it if you're using it in your project.
-
-```tsx
-import { trans } from '@mongez/localization';
-import { Helmet, setHelmetConfigurations } from '@mongez/react-helmet';
-
-setHelmetConfigurations({
-  appName: 'Online Store',
-  appendAppName: true,
-  appNameSeparator: ' | ',
-  translatable: true,
-  translationFunction: trans,
+  // Default <html> attributes / className applied when a per-call value
+  // is not supplied.
+  htmlAttributes: { lang: "en", dir: "ltr" },
+  className: "app-shell",
 });
 ```
 
-## Translatable App Name
+`setHelmetConfigurations` shallow-merges with the existing config — call it once at app boot to set defaults, then override per page via `<Helmet>` props.
 
-You can also determine whether to auto translate app name if `appendAppName` is set to true automatically.
+```ts
+type HelmetConfigurations = {
+  appName?: string;
+  appendAppName?: boolean;           // default: true
+  appNameSeparator?: string;         // default: " | "
+  url?: boolean;                     // default: true
+  htmlAttributes?: Record<string, any>;
+  className?: string;
+  translatable?: boolean;            // default: true
+  translateAppName?: boolean;        // default: true
+  translationFunction?: (key: string) => string;
+};
+```
 
-> By default `translatable` is set to true, but requires `translationFunction` to be set.
+## Translation
+
+When `translatable` is true and a `translationFunction` is configured, the title (and optionally `appName`) is passed through `translationFunction` before being written.
 
 ```tsx
-import { trans } from '@mongez/localization';
-import { Helmet, setHelmetConfigurations } from '@mongez/react-helmet';
+import { trans } from "@mongez/localization";
+import Helmet, { setHelmetConfigurations } from "@mongez/react-helmet";
 
 setHelmetConfigurations({
-  appName: 'appName',
+  appName: "appName",          // a translation key
   appendAppName: true,
-  appNameSeparator: ' | ',
   translatable: true,
   translateAppName: true,
   translationFunction: trans,
 });
+
+// In a route component:
+<Helmet title="contactUs" />
+// Resolves to: trans("contactUs") + " | " + trans("appName")
 ```
 
-Now set `appName` key in each locale object translation, and that's it.
+The component honours both the per-call `translatable={false}` opt-out and a missing `translationFunction` (no-op).
 
-> By default `translateAppName` is set to true, but requires `translationFunction` to be set.
+## `<html>` attributes, page id, class name
 
-## Change Log
+```tsx
+<Helmet
+  title="Dashboard"
+  htmlAttributes={{ lang: "en", dir: "ltr", "data-theme": "dark" }}
+  pageId="dashboard"
+  className="route-dashboard theme-dark"
+/>
+```
 
-- 1.0.8 (16 Jan 2022)
-  - Fixed Bug: Stopped resetting dir and lang attributes on Helmet component unmount.
-- 1.0.4 (11 Jan 2022)
-  - Added `translatable` feature.
+- `htmlAttributes` writes each key/value via `setAttribute` on `<html>`.
+- `pageId` sets `<html>.id`.
+- `className` is split on whitespace and each token is `classList.add`'d.
 
-## TODO
+On unmount, `pageId` and `className` are restored to whatever was on `<html>` when the `<Helmet>` first mounted.
 
-- Enhance code in `Helmet` component.
-- Add translation feature for description and keywords.
-- Add Unit Tests.
+## Examples
+
+### Static landing page
+
+```tsx
+<Helmet
+  title="Welcome"
+  appendAppName={false}
+  description="Beautiful homes, delivered."
+  image="/og-hero.png"
+  url="https://example.com/"
+/>
+```
+
+### Detail page driven by async data
+
+```tsx
+function PostPage({ id }: { id: string }) {
+  const [post, setPost] = useState<Post | null>(null);
+  useEffect(() => {
+    api.getPost(id).then(setPost);
+  }, [id]);
+
+  if (!post) return <Skeleton />;
+
+  return (
+    <>
+      <Helmet
+        title={post.title}
+        description={post.summary}
+        keywords={post.tags}
+        image={post.cover}
+        url={`https://example.com/posts/${post.slug}`}
+      />
+      <PostBody post={post} />
+    </>
+  );
+}
+```
+
+When `id` changes, the new post's `<Helmet>` mounts on the new render path and overwrites the previous title / description / image.
+
+### Localized RTL page
+
+```tsx
+<Helmet
+  title="عربى"
+  htmlAttributes={{ lang: "ar", dir: "rtl" }}
+  pageId="arabic-page"
+  className="arabic-route"
+/>
+```
+
+`<html lang="ar" dir="rtl" id="arabic-page" class="… arabic-route">`.
+
+### Per-page custom URL strategy
+
+```tsx
+// Default: canonical URL is window.location.href.
+<Helmet title="Default" />
+
+// Static canonical (e.g., A/B variant should canonicalize to the main URL).
+<Helmet title="Variant A" url="https://example.com/landing" />
+```
+
+## Related packages
+
+| Package | Purpose |
+|---|---|
+| [`@mongez/dom`](https://github.com/hassanzohdy/dom) | The framework-agnostic DOM utilities under the hood — `setTitle`, `setDescription`, `setKeywords`, `setImage`, `setCanonicalUrl`, `setHTMLAttributes`, font loaders, CSS-variable helpers. Use directly when you need fine-grained `<head>` control outside React. |
+| [`@mongez/react-atom`](https://github.com/hassanzohdy/mongez-react-atom) | Sibling React adapter — atom-based state management with SSR isolation. |
+| [`@mongez/localization`](https://github.com/hassanzohdy/mongez-localization) | The `trans()` function commonly wired into `translationFunction`. |
+
+## Limitations
+
+- **Browser-only.** The module accesses `document.documentElement` at import time, so it can't be imported in a Node SSR context without a DOM shim already loaded. For Next.js / Remix users this means the component must live in a client-only file (`"use client"` or a dynamic import with `ssr: false`).
+- **No virtual `<head>`.** Writes go directly to `document.head`. Two `<Helmet>` instances that set the same field both write — the last effect to run wins, which is the React commit order from the top of the tree down. Re-renders update the corresponding fields; unmount restores `pageId` and `className` to their mount-time snapshot.
+
+## License
+
+MIT
