@@ -58,9 +58,9 @@ mount  →  one effect per prop  →  writes to document.head / documentElement
 re-render with new prop  →  effect with that prop in deps re-runs  →  overwrites the tag
    |
    v
-unmount  →  each effect's cleanup tries to restore the mount-time snapshot
-              (pageId / className restore reliably; title / description /
-               keywords / image / url cleanup is known-broken — see CHANGELOG)
+unmount  →  each effect's cleanup restores the mount-time snapshot
+              (title / description / keywords / image / url / pageId /
+               className / htmlAttributes all restore reliably)
 ```
 
 ## Browser-only

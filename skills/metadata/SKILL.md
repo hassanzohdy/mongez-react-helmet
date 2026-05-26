@@ -81,7 +81,7 @@ Arrays are joined with a literal `,` (no space). If you want comma-and-space sep
 
 - `url={true}` → uses `window.location.href` as the value.
 - `url` as a string → uses that exact string.
-- `url={false}` → currently throws because the downstream call ends up running `value.trim()` on a boolean. Avoid that value until the underlying bug ships a fix (see CHANGELOG).
+- `url={false}` (and `null` / `""`) → the canonical-url effect short-circuits and leaves the existing canonical link untouched.
 
 ## `htmlAttributes` → `<html>` attributes
 
@@ -91,7 +91,7 @@ Arrays are joined with a literal `,` (no space). If you want comma-and-space sep
 
 Each entry becomes `document.documentElement.setAttribute(key, value)`.
 
-On unmount, the captured snapshot is re-applied — **but the cleanup only adds attributes**. Any key introduced by the render that wasn't in the snapshot remains on `<html>` after unmount. (Listed as a known bug in CHANGELOG.)
+On unmount, the cleanup diffs the live `<html>` attribute set against the snapshot taken at mount and removes any attribute the render introduced before re-applying the snapshot.
 
 `lang` and `dir` are intentionally **not** restored from the snapshot, so localization layers that switch lang/dir outside `<Helmet>` keep their value.
 

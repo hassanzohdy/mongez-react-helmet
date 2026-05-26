@@ -119,6 +119,6 @@ When `post` flips from `null` to a real object the whole subtree re-mounts past 
 
 ## Cleanup semantics
 
-`pageId` and `className` restore reliably on unmount to the value snapshotted at mount.
+On unmount each effect restores the value that was present at mount time. The pre-mount snapshot is a shallow clone of `@mongez/dom`'s `getMetaData()` result (taken inside `useMemo` at line 37 of `Helmet.tsx`), so `title` / `description` / `keywords` / `image` / `url` revert to whatever they were before this `<Helmet>` mounted. `pageId` and `className` likewise restore from snapshots captured at mount.
 
-The cleanup for `title` / `description` / `keywords` / `image` / `url` is currently a no-op in practice because the snapshot is a live reference to `@mongez/dom`'s mutable `currentMetaData` singleton — by the time the cleanup runs, the snapshot has been mutated to the current values. For most apps this is invisible (the next route's `<Helmet>` overwrites immediately), but it does mean you can't rely on an unmounted `<Helmet>` "reverting" a head tag. See `skills/metadata.md` for the full list of affected tags and CHANGELOG for tracking.
+`htmlAttributes` cleanup diffs the live `<html>` attribute set against the snapshot and removes any key the render introduced before re-applying the snapshot. `lang` and `dir` are intentionally excluded from the diff so a localization layer that switched them mid-session keeps its value. See `skills/metadata.md` for the full list of affected tags.
