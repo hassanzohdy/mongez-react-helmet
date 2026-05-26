@@ -1,7 +1,9 @@
 ---
 name: mongez-react-helmet-helmet
-description: Complete reference for the <Helmet> component — its props, TypeScript types, per-effect lifecycle, usage examples, and cleanup semantics.
-when_to_use: User imports Helmet from @mongez/react-helmet, user renders a <Helmet> component, user asks which props are available on <Helmet>, user asks about title/description/keywords/image/url props, user needs examples of static or async-data pages using <Helmet>, user asks about cleanup or unmount behavior of Helmet.
+description: |
+  Complete reference for the `<Helmet>` component — its props, `HelmetProps` TypeScript type, per-effect lifecycle, usage examples, and cleanup semantics.
+  TRIGGER when: code imports `Helmet` (default) or `HelmetProps` from `@mongez/react-helmet`; JSX renders `<Helmet title=... />` with props like `title`, `appName`, `appendAppName`, `appNameSeparator`, `translatable`, `description`, `keywords`, `image`, `url`, `htmlAttributes`, `pageId`, or `className`; user asks "how do I set the page title / description / og:image in React", "why doesn't Helmet revert on unmount", or "how do I use Helmet inside Suspense / a route component".
+  SKIP: app-wide config setup (`setHelmetConfigurations`) — use `mongez-react-helmet-configuration`; the framework-agnostic head writers in `@mongez/dom` (`setTitle`, `setDescription`, `setImage`) when you're outside React; the upstream `react-helmet` / `react-helmet-async` libraries; Next.js `<Head>` and App Router `export const metadata`.
 ---
 
 # The `<Helmet>` component

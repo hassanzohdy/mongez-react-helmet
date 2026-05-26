@@ -23,6 +23,9 @@ import Helmet, {
 
 ## The Helmet component
 
+> **Auto-trigger:** code imports `Helmet` (default) or `HelmetProps` from `@mongez/react-helmet`; JSX renders `<Helmet title=... />` with props like `title`, `appName`, `appendAppName`, `appNameSeparator`, `translatable`, `description`, `keywords`, `image`, `url`, `htmlAttributes`, `pageId`, or `className`; user asks "how do I set the page title / description / og:image in React", "why doesn't Helmet revert on unmount", or "how do I use Helmet inside Suspense / a route component".
+> **Skip when:** app-wide config setup (`setHelmetConfigurations`) — use `mongez-react-helmet-configuration`; the framework-agnostic head writers in `@mongez/dom` (`setTitle`, `setDescription`, `setImage`) when you're outside React; the upstream `react-helmet` / `react-helmet-async` libraries; Next.js `<Head>` and App Router `export const metadata`.
+
 ```ts
 type HelmetProps = {
   title: string;                        // required
@@ -75,6 +78,9 @@ export default Helmet;
 `<Helmet>` always returns `null`. It is a side-effect component, not a render component.
 
 ## Configuration
+
+> **Auto-trigger:** code imports `setHelmetConfigurations`, `getHelmetConfigurations`, `getHelmetConfig`, or `HelmetConfigurations` from `@mongez/react-helmet`; user asks "how do I set up app-wide Helmet defaults", "how do I configure appName / appNameSeparator", or "how do I wire @mongez/localization into Helmet titles"; file is a config bootstrap module (e.g. `src/config/helmet.ts`) calling `setHelmetConfigurations({...})`.
+> **Skip when:** per-page `<Helmet>` prop usage — use `mongez-react-helmet-helmet` instead; the lower-level `@mongez/dom` metadata functions (`setTitle`, `setDescription`, etc.) that have no React or config layer; unrelated React Helmet libraries (e.g. `react-helmet`, `react-helmet-async`) or Next.js `export const metadata`.
 
 ```ts
 type HelmetConfigurations = {

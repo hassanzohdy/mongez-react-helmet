@@ -1,7 +1,9 @@
 ---
 name: mongez-react-helmet-overview
-description: High-level orientation to @mongez/react-helmet — what the package does, its mental model, scope boundaries, component lifecycle, and SSR constraints.
-when_to_use: User is new to @mongez/react-helmet and needs a package overview, user asks "what does @mongez/react-helmet do", user needs to understand the relationship between @mongez/react-helmet and @mongez/dom, user asks about SSR compatibility or "use client" requirements for the Helmet component.
+description: |
+  High-level orientation to `@mongez/react-helmet` — what the package does, its mental model around the `<Helmet>` component and `HelmetProps` / `HelmetConfigurations`, scope boundaries vs `@mongez/dom`, component lifecycle, and SSR / `"use client"` constraints.
+  TRIGGER when: user asks "what is @mongez/react-helmet", "how does @mongez/react-helmet differ from @mongez/dom", "can I use @mongez/react-helmet with Next.js App Router / SSR", or wants a package overview before diving into a specific API; `package.json` adds `@mongez/react-helmet` for the first time; `import ... from "@mongez/react-helmet"` appears with no prior context.
+  SKIP: detailed component props (use `mongez-react-helmet-helmet`); the meta-tag mapping table (use `mongez-react-helmet-metadata`); app-wide config (use `mongez-react-helmet-configuration`); copy-paste examples (use `mongez-react-helmet-recipes`); `@mongez/dom` directly when working framework-agnostic outside React.
 ---
 
 # Overview
