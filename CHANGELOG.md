@@ -1,6 +1,6 @@
 # Changelog — @mongez/react-helmet
 
-## Unreleased
+## [1.2.3] — 2026-05-26
 
 ### Fixed
 
@@ -21,10 +21,6 @@
 ### Changed
 
 - **Documentation** — `README.md` rewritten to match the marketing-style format used across the rest of the `@mongez/*` family: tagline, install, 30-second tour, props reference, configuration, examples, related packages, limitations.
-
-### Removed
-
-- _Nothing removed; the public API surface is unchanged._
 
 ### Tests
 
