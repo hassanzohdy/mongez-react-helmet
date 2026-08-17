@@ -22,6 +22,27 @@ function getDocumentElement(): HTMLElement | null {
   return typeof document === "undefined" ? null : document.documentElement;
 }
 
+/**
+ * `htmlAttributes` keys are applied via `Element.setAttribute`. A key that
+ * matches an event-handler attribute name (`onload`, `onerror`, `onclick`,
+ * …) becomes a live inline event handler once set on `<html>`, so an
+ * attacker who can influence the *keys* of a `htmlAttributes` object (e.g.
+ * a CMS "custom head attributes" field spread into this prop) could get
+ * script execution. Strip any `on*` key before it ever reaches the DOM.
+ */
+function sanitizeHtmlAttributes(attributes: Object): Object {
+  if (!attributes) return attributes;
+
+  const sanitized: Record<string, unknown> = {};
+
+  for (const [name, value] of Object.entries(attributes)) {
+    if (/^on/i.test(name)) continue;
+    sanitized[name] = value;
+  }
+
+  return sanitized;
+}
+
 export default function Helmet(props: HelmetProps) {
   function getConfig<T>(key: keyof HelmetProps): T {
     return props[key] !== undefined
@@ -160,7 +181,7 @@ export default function Helmet(props: HelmetProps) {
 
     if (htmlAttributes === undefined) return clear;
 
-    setHTMLAttributes(htmlAttributes);
+    setHTMLAttributes(sanitizeHtmlAttributes(htmlAttributes));
 
     return clear;
   }, [props.htmlAttributes]);

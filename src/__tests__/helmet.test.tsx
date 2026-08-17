@@ -226,6 +226,28 @@ describe("Helmet — html attributes", () => {
     expect(document.documentElement.getAttribute("dir")).toBe("ltr");
     expect(document.documentElement.getAttribute("data-app")).toBe("mine");
   });
+
+  it("strips on* event-handler keys from htmlAttributes instead of applying them", () => {
+    render(
+      <Helmet
+        title="HTMLAttr XSS"
+        appendAppName={false}
+        htmlAttributes={{
+          onload: "alert(1)",
+          onmouseover: "alert(2)",
+          OnClick: "alert(3)",
+          lang: "en",
+          "data-app": "mine",
+        }}
+      />
+    );
+    expect(document.documentElement.getAttribute("onload")).toBeNull();
+    expect(document.documentElement.getAttribute("onmouseover")).toBeNull();
+    expect(document.documentElement.getAttribute("OnClick")).toBeNull();
+    expect(document.documentElement.getAttribute("onclick")).toBeNull();
+    expect(document.documentElement.getAttribute("lang")).toBe("en");
+    expect(document.documentElement.getAttribute("data-app")).toBe("mine");
+  });
 });
 
 describe("Helmet — pageId", () => {

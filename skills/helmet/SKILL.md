@@ -2,8 +2,6 @@
 name: mongez-react-helmet-helmet
 description: |
   Complete reference for the `<Helmet>` component — its props, `HelmetProps` TypeScript type, per-effect lifecycle, usage examples, and cleanup semantics.
-  TRIGGER when: code imports `Helmet` (default) or `HelmetProps` from `@mongez/react-helmet`; JSX renders `<Helmet title=... />` with props like `title`, `appName`, `appendAppName`, `appNameSeparator`, `translatable`, `description`, `keywords`, `image`, `url`, `htmlAttributes`, `pageId`, or `className`; user asks "how do I set the page title / description / og:image in React", "why doesn't Helmet revert on unmount", or "how do I use Helmet inside Suspense / a route component".
-  SKIP: app-wide config setup (`setHelmetConfigurations`) — use `mongez-react-helmet-configuration`; the framework-agnostic head writers in `@mongez/dom` (`setTitle`, `setDescription`, `setImage`) when you're outside React; the upstream `react-helmet` / `react-helmet-async` libraries; Next.js `<Head>` and App Router `export const metadata`.
 ---
 
 # The `<Helmet>` component
@@ -121,4 +119,4 @@ When `post` flips from `null` to a real object the whole subtree re-mounts past 
 
 On unmount each effect restores the value that was present at mount time. The pre-mount snapshot is a shallow clone of `@mongez/dom`'s `getMetaData()` result (taken inside `useMemo` at line 37 of `Helmet.tsx`), so `title` / `description` / `keywords` / `image` / `url` revert to whatever they were before this `<Helmet>` mounted. `pageId` and `className` likewise restore from snapshots captured at mount.
 
-`htmlAttributes` cleanup diffs the live `<html>` attribute set against the snapshot and removes any key the render introduced before re-applying the snapshot. `lang` and `dir` are intentionally excluded from the diff so a localization layer that switched them mid-session keeps its value. See `skills/metadata.md` for the full list of affected tags.
+`htmlAttributes` keys matching `on*` (event-handler attribute names) are stripped before anything is written to `<html>`. Cleanup diffs the live `<html>` attribute set against the snapshot and removes any key the render introduced before re-applying the snapshot. `lang` and `dir` are intentionally excluded from the diff so a localization layer that switched them mid-session keeps its value. See `skills/metadata.md` for the full list of affected tags.
